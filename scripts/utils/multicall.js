@@ -1,11 +1,11 @@
-let multicallInstance
-const HecoMulticallAddress = "0x5F6C56Ae1546A7371d529D5620D5Ff6c07394AfE"
-const BSCMulticallAddress = "0x1Ee38d535d541c55C9dae27B12edf090C608E6Fb"
-const ETHMulticallAddress = "0x5BA1e12693Dc8F9c48aAD8770482f4739bEeD696"
-const OECMulticallAddress = "0x330f326517D54b8b67aD8b1cA9bF3401d43EFAdA"
+let multicallInstance;
+const HecoMulticallAddress = '0x5F6C56Ae1546A7371d529D5620D5Ff6c07394AfE';
+const BSCMulticallAddress = '0x1Ee38d535d541c55C9dae27B12edf090C608E6Fb';
+const ETHMulticallAddress = '0x5BA1e12693Dc8F9c48aAD8770482f4739bEeD696';
+const OECMulticallAddress = '0x330f326517D54b8b67aD8b1cA9bF3401d43EFAdA';
 
-const multicallAbi = require("./abi/MultiCall.json")
-const { ethers } = require("hardhat")
+const multicallAbi = require('./abi/MultiCall.json');
+const { ethers } = require('hardhat');
 
 /*
  * @param callObjVev
@@ -19,16 +19,16 @@ const { ethers } = require("hardhat")
  * ]
  * */
 const generateCalls = async (callObjVec) => {
-  const calls = []
-  for (const { target, instance, functionName, params } of callObjVec) {
-    const tx = await instance.populateTransaction[functionName](...params)
-    calls.push({
-      target,
-      callData: tx.data,
-    })
-  }
-  return calls
-}
+    const calls = [];
+    for (const { target, instance, functionName, params } of callObjVec) {
+        const tx = await instance.populateTransaction[functionName](...params);
+        calls.push({
+            target,
+            callData: tx.data,
+        });
+    }
+    return calls;
+};
 /*
 * @dev
 * const tx = await poolInstance.populateTransaction.totalSupply();
@@ -40,32 +40,32 @@ const generateCalls = async (callObjVec) => {
 * ]
 * */
 const multiCall = async (calls, multicallAddress, isRequestBlockTime = true) => {
-  if (!multicallInstance) {
-    multicallInstance = await ethers.getContractAt(multicallAbi, multicallAddress)
-  }
+    if (!multicallInstance) {
+        multicallInstance = await ethers.getContractAt(multicallAbi, multicallAddress);
+    }
 
-  if (isRequestBlockTime) {
-    calls.push({
-      target: multicallAddress,
-      callData: (await multicallInstance.populateTransaction.getCurrentBlockTimestamp()).data,
-    })
-  }
+    if (isRequestBlockTime) {
+        calls.push({
+            target: multicallAddress,
+            callData: (await multicallInstance.populateTransaction.getCurrentBlockTimestamp()).data,
+        });
+    }
 
-  return await multicallInstance.callStatic.aggregate(calls)
-}
+    return await multicallInstance.callStatic.aggregate(calls);
+};
 
 const getBlockTimestamp = async () => {
-  if (!multicallInstance) {
-    multicallInstance = await ethers.getContractAt("Multicall", HecoMulticallAddress)
-  }
-  return await multicallInstance.callStatic.getCurrentBlockTimestamp()
-}
+    if (!multicallInstance) {
+        multicallInstance = await ethers.getContractAt('Multicall', HecoMulticallAddress);
+    }
+    return await multicallInstance.callStatic.getCurrentBlockTimestamp();
+};
 
 module.exports = {
-  HecoMulticallAddress,
-  BSCMulticallAddress,
-  ETHMulticallAddress,
-  OECMulticallAddress,
-  generateCalls,
-  multiCall,
-}
+    HecoMulticallAddress,
+    BSCMulticallAddress,
+    ETHMulticallAddress,
+    OECMulticallAddress,
+    generateCalls,
+    multiCall,
+};
