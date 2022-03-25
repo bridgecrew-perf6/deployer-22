@@ -1,0 +1,22 @@
+node_modules
+
+#Hardhat files
+cache
+artifacts
+artifacts-bak
+coverage
+coverage.json
+
+**mnemonic
+**.idea
+
+.env
+**.DS_Store
+.config
+config.json
+config**.json
+**/**codelab**
+**volume**
+**typechain-types
+scripts/Bot
+.env.example
