@@ -15,7 +15,6 @@ coverage.json
 .config
 config.json
 config**.json
-**/**codelab**
 **volume**
 **typechain-types
 scripts/Bot
