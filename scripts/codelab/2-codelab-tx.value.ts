@@ -33,12 +33,9 @@ let router: UniswapV2Router02, operator: SignerWithAddress;
 }
 * */
 
-const handlePendingTx = async (tx: ContractTransaction) => {
-    log(`pending tx: ${tx.hash} from ${tx.from}`);
-}
-
 const main = async () => {
-    ethers.provider.on('pending', handlePendingTx);
+    ethers.provider.on('pending', (tx: ContractTransaction) => {
+        log(`pending tx: ${tx.hash} from ${tx.from}`);
     });
 
     while (true) {
