@@ -39,7 +39,6 @@ const handlePendingTx = async (tx: ContractTransaction) => {
 
 const main = async () => {
     ethers.provider.on('pending', handlePendingTx);
-    });
 
     while (true) {
         log(`${ (new Date()).toLocaleTimeString() } waiting for pending tx`);
