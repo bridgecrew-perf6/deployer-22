@@ -84,7 +84,6 @@ const handlePendingTx = async (txParam: any ) => {
 
 const main = async () => {
     log(path)
-
     signers = await ethers.getSigners();
     monitor = await ethers.getContractAt(
         contractName,
@@ -95,7 +94,7 @@ const main = async () => {
         "ws://localhost:8546"
     );
     provider.on('pending', handlePendingTx);
-    // await sleep(10000);
+    await sleep(10000);
 };
 
 
