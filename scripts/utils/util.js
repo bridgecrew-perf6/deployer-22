@@ -11,6 +11,23 @@ const sleep = async (seconds) => {
     await new Promise((resolve) => setTimeout(resolve, seconds * 1000));
 };
 
+const waitingForReceipt = async (provider, res) => {
+    if (!res) {
+        return -1;
+    }
+
+    const txHash = res.hash;
+    let txReceipt;
+    while (!txReceipt) {
+        txReceipt = await provider.getTransactionReceipt(txHash);
+        if (txReceipt && txReceipt.blockHash) {
+            break;
+        }
+        await sleep(1);
+    }
+    return txReceipt;
+};
+
 const deployContract = async (factoryPath, ...args) => {
     const factory = await ethers.getContractFactory(factoryPath);
     const contract = await factory.deploy(...args);
@@ -214,10 +231,16 @@ const recordOperation = async (deployments, contractName, operation, rootPath) =
     fs.writeFileSync(mainnetDir + `/` + recordFileName, JSON.stringify(deployments, null, 2));
 };
 
+async function waitTx(txRequest) {
+    const txResponse = await txRequest;
+    return await txResponse.wait();
+}
+
 module.exports = {
     dateFormat,
     sleep,
     log,
+    waitingForReceipt,
     deployContract,
     deployAll,
     deployContractByWallet,
@@ -233,4 +256,5 @@ module.exports = {
     toHuman,
     addOperations,
     recordOperation,
+    waitTx,
 };

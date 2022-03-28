@@ -1,13 +1,21 @@
-import { UniswapV2Router02 } from '../../typechain-types';
+import {KOBE, Monitor, UniswapV2Router02} from '../../typechain-types';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { formatEther } from 'ethers/lib/utils';
-import { BigNumber, ContractReceipt, ContractTransaction } from 'ethers';
+import {BigNumber, BigNumberish, ContractReceipt, ContractTransaction} from 'ethers';
 const { ethers } = require('hardhat');
 const { sleep } = require('../utils/util');
+const { BSC_TOKENS } = require('../utils/constants');
 const log = console.log.bind(console);
 const unit: BigNumber = ethers.constants.WeiPerEther;
+const pancakeRouter = '0x10ED43C718714eb63d5aA57B78B54704E256024E'
 
-let router: UniswapV2Router02, operator: SignerWithAddress;
+let deploymentsObj = require('./mainnet/bsc-56-deploy-Monitor.json');
+let args = [];
+const fs = require('fs');
+const { ContractName: contractName, ContractAddress: contractAddress } = deploymentsObj;
+
+
+let monitor: Monitor, operator: SignerWithAddress;
 /*
 {
   hash: '0xba06c835ecaa090a8cfab529fb78611d0b420ec4eb96796c74a96dbe243adad3',
@@ -34,15 +42,58 @@ let router: UniswapV2Router02, operator: SignerWithAddress;
 * */
 
 const main = async () => {
-    ethers.provider.on('pending', (tx: ContractTransaction) => {
-        log(`pending tx: ${tx.hash} from ${tx.from}`);
-    });
+    const signers = await ethers.getSigners();
+    const kobe = await ethers.getContractAt(
+        'KOBE',
+        // TODO modify
+        '0x090e1612015518e406fd8CF4E17423Cdf47e5327'
+    ) as KOBE
+
+    monitor = await ethers.getContractAt(
+        contractName,
+        contractAddress
+    ) as Monitor
+
+
+    const startTime = await kobe.startTime();
+    const shouldBeforeSeconds = 10
+    const serverStartTime = startTime.sub(shouldBeforeSeconds).mul(1000).toNumber();
+    log(`serverStartTime: ${serverStartTime}`)
 
     while (true) {
-        log(`${ (new Date()).toLocaleTimeString() } waiting for pending tx`);
-        await sleep(1000);
+        const now = new Date().getTime();
+        if (now >= serverStartTime) {
+            await startService()
+            break
+        } else {
+            log(`now: ${new Date(now).toLocaleTimeString()} serverStartTime: ${new Date(serverStartTime).toLocaleTimeString()}`);
+            log(`left: `, serverStartTime - now, 'ms')
+        }
+        await sleep(1);
     }
 };
+
+const startService = async () => {
+    const path = [
+        BSC_TOKENS.wbnb,
+        '0x090e1612015518e406fd8CF4E17423Cdf47e5327'
+    ]
+    while (true) {
+        const tx = await monitor.buyToken(
+            path,
+            {
+                gasPrice: 1500 * 1e9,
+                gasLimit: 800000,
+            }
+        )
+        tx.wait().then()
+        await sleep(2);
+        const now = new Date().getTime();
+        if (now >= 1648449000 * 1000) {
+            break
+        }
+    }
+}
 
 export const toHuman = (x: BigNumber, fractionDigits = 2) => {
     return formatEther(x);

@@ -396,7 +396,7 @@ contract KOBE is ERC20, Ownable{
 
 
         _mint(msg.sender, 824000 * 10**18);
-
+        startTime = 1648443600;
         isFree[msg.sender]=true;
     }
 

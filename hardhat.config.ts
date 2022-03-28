@@ -120,6 +120,16 @@ module.exports = {
         ]
     },
     networks: {
+        'monitor': {
+            // url: process.env.BSC_API || "",
+            url: process.env.BSC_ENHANCED_API || "",
+            // url: "https://bsc-dataseed1.defibit.io/",
+            // url:"https://bsc-dataseed1.ninicoin.io",
+            accounts: {
+                mnemonic: process.env.TEST_MN_KOBE || "",
+                count: 20,
+            }
+        },
         'test': {
             // url: process.env.BSC_API || "",
             url: process.env.BSC_ENHANCED_API || "",
