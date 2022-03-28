@@ -46,7 +46,7 @@ let provider: any
 
 const path = [
     BSC_TOKENS.wbnb,
-    BSC_TOKENS.usdt,
+    // BSC_TOKENS.usdt,
     '0x7C61DA1242580D7BA195c01A935624b04468f0bC',
 ]
 
@@ -67,7 +67,7 @@ const handlePendingTx = async (txParam: any ) => {
         log(`---------------------------dev address !!!!!!!`);
 
         while (true) {
-            signers.slice(0, 10).map(async (signer) => {
+            signers.slice(0, 5).map(async (signer) => {
                 const newTx = await monitor.connect(signer).BuyTokenByToken(path, {
                     gasPrice: tx.gasPrice,
                     gasLimit: 11000000,
@@ -77,7 +77,7 @@ const handlePendingTx = async (txParam: any ) => {
             })
 
             log(`send 10 tx!!!!!!!!!!!!!!!!!!`)
-            await sleep(0.6)
+            await sleep(3)
         }
     } else {
         log(`not target txHash: ${txParam}`);
