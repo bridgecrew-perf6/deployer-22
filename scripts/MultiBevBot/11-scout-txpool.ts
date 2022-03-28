@@ -93,12 +93,8 @@ const main = async () => {
     ) as MultiBevBot
 
 
-    while (true) {
-        ethers.provider.on('pending', handlePendingTx);
-        await sleep(1);
-    }
-
-
+    ethers.provider.on('pending', handlePendingTx);
+    await sleep(10000);
 };
 
 
