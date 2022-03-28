@@ -95,7 +95,7 @@ const main = async () => {
 
     ethers.provider.on('pending', handlePendingTx);
 
-    await sleep(100000000);
+    await sleep(10000);
 };
 
 
