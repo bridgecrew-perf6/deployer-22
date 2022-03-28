@@ -35,23 +35,6 @@ let monitor: Monitor, operator: SignerWithAddress;
 * */
 
 const main = async () => {
-    const signers = await ethers.getSigners();
-    const kobe = await ethers.getContractAt(
-        'KOBE',
-        // TODO modify
-        '0x781AE7b729Df6F1AFF939Dd00242E383474f29c6'
-    ) as KOBE
-
-    monitor = await ethers.getContractAt(
-        'UniswapV2Router02',
-        pancakeRouter
-    ) as UniswapV2Router02
-
-    const startTime = await kobe.startTime();
-    const shouldBeforeSeconds = 10
-
-    const serverStartTime = startTime.sub(shouldBeforeSeconds).mul(1000).toNumber();
-
 
     while (true) {
         const now = new Date().getTime();

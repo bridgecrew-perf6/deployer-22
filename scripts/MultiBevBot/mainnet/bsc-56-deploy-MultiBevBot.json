@@ -1,6 +1,6 @@
 {
   "ContractName": "MultiBevBot",
-  "ContractAddress": "0xC919dA63d0F899115C8459506CA417D0eD6878a6",
+  "ContractAddress": "0xbf9f6A075406e15742d904d484eb79F5be08501b",
   "ContractDeployArgs": [
     "0x10ED43C718714eb63d5aA57B78B54704E256024E",
     [
@@ -9,6 +9,6 @@
       "0x55d398326f99059fF775485246999027B3197955"
     ]
   ],
-  "Deployer": "0xe55452832750d36Ba442383c1eB720b5701d3EE4",
-  "DeployTime": "3/28/2022, 8:37:10 PM"
+  "Deployer": "0xf21B4ee02f58b0FD02B8dD24b699DaC14e11b974",
+  "DeployTime": "3/29/2022, 12:27:26 AM"
 }

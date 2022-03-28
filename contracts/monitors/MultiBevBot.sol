@@ -33,11 +33,17 @@ contract MultiBevBot is OwnableUpgradeable {
         uint256 amountOutPerReceiverByTarget;
         uint256 canAcceptMaxWBNBAmountIn;
 
+        // swap config
+        uint256 gasLimit;
+        uint256 sendCountsPerAccount;
+        uint256 sendTxAccCounts;
+
         // after swap
-        uint256 boughtTargetAmount;
-        uint256 boughtCostWBNB;
+        uint256 boughtAmount;
         uint256 sellSlippage;
         uint256 soldWBNBAmount;
+
+        uint256 lpBNBAmountThreshold;  //
     }
 
     function initialize(address _router, address[] memory _whitelistSet)
@@ -53,7 +59,7 @@ contract MultiBevBot is OwnableUpgradeable {
         canAcceptMaxSlippage = 50;
     }
 
-/*  ------------------------ 1. onlyOwner ------------------------ */
+    /*  ------------------------ 1. onlyOwner ------------------------ */
     function setSlippage(uint256 _canAcceptMaxSlippage) external onlyOwner {
         canAcceptMaxSlippage = _canAcceptMaxSlippage;
     }
@@ -70,49 +76,61 @@ contract MultiBevBot is OwnableUpgradeable {
 
     function setTargetToken(
         address _target,
-        string calldata _symbol,
         address[] calldata _receivers,
 
         uint256 _serviceStartAt,
         uint256 _serviceEndAt,
         uint256 _amountOutPerReceiverByTarget,
         uint256 _canAcceptMaxWBNBAmountIn,
-        uint256 _sellSlippage
+        uint256 _sellSlippage,
+
+        uint256 _gasLimit,
+        uint256 _sendTxAccCounts,
+        uint256 _sendCountsPerAccount,
+
+        uint256 _lpBNBAmountThreshold // no decimals
     )
     external
     onlyOwner
     {
-        if (targetConfigMap[_target].amountOutPerReceiverByTarget == 0) {
-            // buy at first time
-            allSellTokens.push(_target);
+        {
+            targetToken = _target;
+            require(_receivers.length > 0, "Empty receivers");
+            receivers = _receivers;
         }
 
-        targetToken = _target;
-        targetSymbol = _symbol;
-        require(_receivers.length > 0, "Empty receivers");
-        receivers = _receivers;
+        {
+            targetConfigMap[targetToken].serviceStartAt = _serviceStartAt;
+            targetConfigMap[targetToken].serviceEndAt = _serviceEndAt;
+            targetConfigMap[targetToken].amountOutPerReceiverByTarget = _amountOutPerReceiverByTarget;
+            targetConfigMap[targetToken].canAcceptMaxWBNBAmountIn = _canAcceptMaxWBNBAmountIn;
+            targetConfigMap[targetToken].sellSlippage = _sellSlippage;
 
-        targetConfigMap[_target].serviceStartAt = _serviceStartAt;
-        targetConfigMap[_target].serviceEndAt = _serviceEndAt;
-        targetConfigMap[_target].amountOutPerReceiverByTarget = _amountOutPerReceiverByTarget;
-        targetConfigMap[_target].canAcceptMaxWBNBAmountIn = _canAcceptMaxWBNBAmountIn;
-        targetConfigMap[_target].sellSlippage = _sellSlippage;
+        }
+
+        {
+            targetConfigMap[targetToken].gasLimit = _gasLimit;
+            targetConfigMap[targetToken].sendCountsPerAccount = _sendCountsPerAccount;
+            targetConfigMap[targetToken].sendTxAccCounts = _sendTxAccCounts;
+            targetConfigMap[targetToken].lpBNBAmountThreshold = _lpBNBAmountThreshold;
+        }
+
     }
 
     function restartCurrentTarget()
     external
     onlyOwner
     {
-        targetConfigMap[targetToken].boughtTargetAmount = 0;
+        targetConfigMap[targetToken].boughtAmount = 0;
     }
 
-/*  ------------------------ 2. external ------------------------ */
-    function MultiBuyExactTargetFromTokens(address[] calldata path)
+    /*  ------------------------ 2. external ------------------------ */
+    function BuyTokenByToken(address[] calldata path)
     external
     {
         address _target = path[path.length - 1];
         Config storage config = targetConfigMap[_target];
-        require(config.boughtTargetAmount == 0, "targetToken already bought");
+        require(config.boughtAmount == 0, "targetToken already bought");
         require(
             config.serviceStartAt <= block.timestamp && block.timestamp <= config.serviceEndAt,
             "targetToken not in service time"
@@ -148,7 +166,7 @@ contract MultiBevBot is OwnableUpgradeable {
 
             _boughtAmount = IERC20Upgradeable(_target).balanceOf(_receiver) - beforeTargetBalance;
             if (_boughtAmount > 0) {
-                config.boughtTargetAmount += _boughtAmount;
+                config.boughtAmount += _boughtAmount;
             }
 
             if (!buySuccess || _boughtAmount < _canAcceptMinAmountOut) {
@@ -156,7 +174,7 @@ contract MultiBevBot is OwnableUpgradeable {
                 break;
             }
         }
-        require(config.boughtTargetAmount > 0, "MultiBuyExactTokensFromTokens failed");
+        require(config.boughtAmount > 0, "MultiBuyExactTokensFromTokens failed");
     }
 
     // !!! Important
@@ -206,7 +224,7 @@ contract MultiBevBot is OwnableUpgradeable {
         config.soldWBNBAmount += actualSoldWBNB;
     }
 
-/*  ------------------------ 3. internal ------------------------ */
+    /*  ------------------------ 3. internal ------------------------ */
     function _testSwapTokenForToken(address[] calldata path) internal {
         address to = address(this);
         address _source = path[0];
@@ -238,7 +256,7 @@ contract MultiBevBot is OwnableUpgradeable {
         (bool sellSuccess, ) = address(router).call(
             abi.encodeWithSelector(
                 0x5c11d795,  // swapExactTokensForTokensSupportingFeeOnTransferTokens
-                actualBuyAmount,
+                actualBuyAmount * 75 / 100,
                 0,
                 sellPath,
                 to,
@@ -254,8 +272,25 @@ contract MultiBevBot is OwnableUpgradeable {
         );
     }
 
-/*  ------------------------ 4. view ------------------------ */
-    function getTarget() public view returns(address targetToken, string memory targetSymbol) {
-        return (targetToken, targetSymbol);
+    /*  ------------------------ 4. view ------------------------ */
+    function getTarget()
+    external
+    view
+    returns(
+        address targetTokenAddress,
+        uint256 gasLimit,
+        uint256 sendCountsPerAccount,
+        uint256 sendTxAccCounts,
+        uint256 lpBNBAmountThreshold
+    ) {
+        Config memory config = targetConfigMap[targetToken];
+        return (
+        targetToken,
+        config.gasLimit,
+        config.sendCountsPerAccount,
+        config.sendTxAccCounts,
+        config.lpBNBAmountThreshold
+        );
     }
+
 }

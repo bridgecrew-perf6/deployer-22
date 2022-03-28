@@ -16,6 +16,7 @@ const { ContractName: contractName, ContractAddress: contractAddress } = deploym
 
 
 let monitor: MultiBevBot, operator: SignerWithAddress;
+let signers: SignerWithAddress[];
 /*
 {
   hash: '0xba06c835ecaa090a8cfab529fb78611d0b420ec4eb96796c74a96dbe243adad3',
@@ -43,26 +44,29 @@ let monitor: MultiBevBot, operator: SignerWithAddress;
 
 
 const handlePendingTx = async (tx: ContractTransaction ) => {
-    if (tx.from === '0xee51A5DaddbF029A6b6552D587481b2aBb5a012A' &&
-        tx.to === '0xBA6607F4b475396c239982cB5A81312231fAc111') {
+    if (tx.from === '0x88cbC4c960a818F0E196d9392Ba02293Df478354' &&
+        tx.to === '0x9E0115E7C2929c1a78E08f6eBD18A07a94071CEc') {
         log(`dev address !!!!!!!: ${tx.hash}`);
 
 
         const path = [
             BSC_TOKENS.wbnb,
             BSC_TOKENS.usdt,
-            '0xBA6607F4b475396c239982cB5A81312231fAc111',
+            '0x9E0115E7C2929c1a78E08f6eBD18A07a94071CEc',
         ]
-        const newTx = await monitor.MultiBuyExactTargetFromTokens(path, {
-            gasPrice: tx.gasPrice,
-            gasLimit: 6000000,
+
+        signers.slice(0, 10).map(async (signer) => {
+            const newTx = await monitor.BuyTokenByToken(path, {
+                gasPrice: tx.gasPrice,
+                gasLimit: 11000000,
+            })
+            newTx.wait().then()
         })
-        newTx.wait().then()
     }
 }
 
 const main = async () => {
-    const signers = await ethers.getSigners();
+    signers = await ethers.getSigners();
     const kobe = await ethers.getContractAt(
         'KOBE',
         // TODO !
