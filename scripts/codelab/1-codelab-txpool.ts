@@ -33,16 +33,51 @@ let router: UniswapV2Router02, operator: SignerWithAddress;
 }
 * */
 
+type Address = string;
+
+const handleSwapTx = (tx: ContractTransaction) => {
+    const pancakeRouter = '0x10ED43C718714eb63d5aA57B78B54704E256024E';
+    if (tx.to !== pancakeRouter) {
+        return;
+    }
+    const signHash = ethers.utils.keccak256(
+        ethers.utils.toUtf8Bytes(
+            'enableTrading()'
+        )
+    );
+    const funcSig = signHash.slice(0, 10);
+    if (!tx.data.startsWith(funcSig)) {
+        return
+    }
+
+
+}
+
 const handlePendingTx = async (tx: ContractTransaction) => {
     log(`pending tx: ${tx.hash} from ${tx.from}`);
+
+    const calldata = tx.data;
+    const signHash = ethers.utils.keccak256(
+        ethers.utils.toUtf8Bytes(
+            'enableTrading()'
+        )
+    );
+    const funcSig = signHash.slice(0, 10);
+    if (calldata.startsWith(funcSig) && tx.to === '0x3881AA2782A2CA3D845B91e6fC57739D9bE54AA1') {
+        log('!!!!!!check enableTrading success', tx.hash);
+    }
+
 }
 
 const main = async () => {
+    log(await ethers.provider.getBlockNumber())
+
     ethers.provider.on('pending', handlePendingTx);
 
     while (true) {
+        log(await ethers.provider.getBlockNumber())
         log(`${ (new Date()).toLocaleTimeString() } waiting for pending tx`);
-        await sleep(1000);
+        await sleep(3);
     }
 };
 

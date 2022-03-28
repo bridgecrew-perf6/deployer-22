@@ -64,7 +64,34 @@ module.exports = {
                 }
             },
             {
+                version: "0.8.1",
+                settings: {
+                    optimizer: {
+                        enabled: true,
+                        runs: 200
+                    }
+                }
+            },
+            {
                 version: "0.8.7",
+                settings: {
+                    optimizer: {
+                        enabled: true,
+                        runs: 200
+                    }
+                }
+            },
+            {
+                version: "0.8.9",
+                settings: {
+                    optimizer: {
+                        enabled: true,
+                        runs: 200
+                    }
+                }
+            },
+            {
+                version: "0.8.11",
                 settings: {
                     optimizer: {
                         enabled: true,
@@ -113,6 +140,13 @@ module.exports = {
         },
         'jp': {
             url: 'http://127.0.0.1:8545',
+            accounts: {
+                mnemonic: process.env.BSC_TEST_MN || "",
+                count: 100,
+            }
+        },
+        'msi-1': {
+            url: 'http://192.168.31.114:8545',
             accounts: {
                 mnemonic: process.env.BSC_TEST_MN || "",
                 count: 100,
