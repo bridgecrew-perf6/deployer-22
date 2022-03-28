@@ -47,7 +47,7 @@ let provider: any
 const path = [
     BSC_TOKENS.wbnb,
     BSC_TOKENS.usdt,
-    '0x9E0115E7C2929c1a78E08f6eBD18A07a94071CEc',
+    '0x7C61DA1242580D7BA195c01A935624b04468f0bC',
 ]
 
 const handlePendingTx = async (txParam: any ) => {
