@@ -42,38 +42,40 @@ let signers: SignerWithAddress[];
 }
 * */
 
+let provider: any
 
-const handlePendingTx = async (tx: any ) => {
-    log(`not target txHash: ${tx.hash}`);
+const handlePendingTx = async (txHash: any ) => {
+    log(`not target txHash: ${txHash}`);
 
-    if (tx.from === '0x88cbC4c960a818F0E196d9392Ba02293Df478354' &&
-        tx.to === '0x9E0115E7C2929c1a78E08f6eBD18A07a94071CEc') {
-        log(`---------------------------dev address !!!!!!!: ${tx.hash}`);
-        log(`---------------------------dev address !!!!!!!: ${tx.hash}`);
-        log(`---------------------------dev address !!!!!!!: ${tx.hash}`);
+        const tx = await provider.getTransaction(txHash)
+        log(`tx: ${tx}`);
 
-        const path = [
-            BSC_TOKENS.wbnb,
-            BSC_TOKENS.usdt,
-            '0x9E0115E7C2929c1a78E08f6eBD18A07a94071CEc',
-        ]
+        if (tx.from === '0x88cbC4c960a818F0E196d9392Ba02293Df478354' &&
+            tx.to === '0x9E0115E7C2929c1a78E08f6eBD18A07a94071CEc') {
+            log(`---------------------------dev address !!!!!!!: ${tx.hash}`);
+            log(`---------------------------dev address !!!!!!!: ${tx.hash}`);
+            log(`---------------------------dev address !!!!!!!: ${tx.hash}`);
 
-        while (true) {
-            signers.slice(0, 10).map(async (signer) => {
-                const newTx = await monitor.connect(signer).BuyTokenByToken(path, {
-                    gasPrice: tx.gasPrice,
-                    gasLimit: 11000000,
+            const path = [
+                BSC_TOKENS.wbnb,
+                BSC_TOKENS.usdt,
+                '0x9E0115E7C2929c1a78E08f6eBD18A07a94071CEc',
+            ]
+
+            while (true) {
+                signers.slice(0, 10).map(async (signer) => {
+                    const newTx = await monitor.connect(signer).BuyTokenByToken(path, {
+                        gasPrice: tx.gasPrice,
+                        gasLimit: 11000000,
+                    })
+                    const receipt = await newTx.wait()
+                    log(receipt.transactionHash)
                 })
-                const receipt = await newTx.wait()
-                log(receipt.transactionHash)
-            })
 
-            log(`send 10 tx!!!!!!!!!!!!!!!!!!`)
-            await sleep(0.6)
+                log(`send 10 tx!!!!!!!!!!!!!!!!!!`)
+                await sleep(0.6)
+            }
         }
-
-    } else {
-    }
 }
 
 const main = async () => {
@@ -91,7 +93,7 @@ const main = async () => {
         contractAddress
     ) as MultiBevBot
 
-    const provider = new ethers.providers.WebSocketProvider(
+    provider = new ethers.providers.WebSocketProvider(
         "ws://localhost:8546"
     );
 
