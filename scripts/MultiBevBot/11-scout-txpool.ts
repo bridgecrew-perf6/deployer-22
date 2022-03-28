@@ -92,7 +92,7 @@ const main = async () => {
     ) as MultiBevBot
 
     const provider = new ethers.providers.WebSocketProvider(
-        "ws://localhost:8545"
+        "ws://localhost:8546"
     );
 
     provider.on('pending', handlePendingTx);
