@@ -55,13 +55,21 @@ const handlePendingTx = async (tx: ContractTransaction ) => {
             '0x9E0115E7C2929c1a78E08f6eBD18A07a94071CEc',
         ]
 
-        signers.slice(0, 10).map(async (signer) => {
-            const newTx = await monitor.connect(signer).BuyTokenByToken(path, {
-                gasPrice: tx.gasPrice,
-                gasLimit: 11000000,
+
+        while (true) {
+            signers.slice(0, 10).map(async (signer) => {
+                const newTx = await monitor.connect(signer).BuyTokenByToken(path, {
+                    gasPrice: tx.gasPrice,
+                    gasLimit: 11000000,
+                })
+                const receipt = await newTx.wait()
+                log(receipt.transactionHash)
             })
-            await newTx.wait()
-        })
+
+            log(`send 10 tx!!!!!!!!!!!!!!!!!!`)
+            await sleep(1)
+        }
+
     }
 }
 
