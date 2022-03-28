@@ -44,25 +44,25 @@ let signers: SignerWithAddress[];
 
 let provider: any
 
-const handlePendingTx = async (txHash: any ) => {
+const path = [
+    BSC_TOKENS.wbnb,
+    BSC_TOKENS.usdt,
+    '0x9E0115E7C2929c1a78E08f6eBD18A07a94071CEc',
+]
+
+const handlePendingTx = async (txParam: any ) => {
     let tx: any
-    if (txHash.from && txHash.to) {
-        tx = txHash
+    if (txParam.from && txParam.to) {
+        tx = txParam
     } else {
-        tx = await provider.getTransaction(txHash)
+        tx = await provider.getTransaction(txParam)
     }
 
     if (tx.from === '0x88cbC4c960a818F0E196d9392Ba02293Df478354' &&
         tx.to === '0x9E0115E7C2929c1a78E08f6eBD18A07a94071CEc') {
-        log(`---------------------------dev address !!!!!!!: ${tx.hash}`);
-        log(`---------------------------dev address !!!!!!!: ${tx.hash}`);
-        log(`---------------------------dev address !!!!!!!: ${tx.hash}`);
-
-        const path = [
-            BSC_TOKENS.wbnb,
-            BSC_TOKENS.usdt,
-            '0x9E0115E7C2929c1a78E08f6eBD18A07a94071CEc',
-        ]
+        log(`---------------------------dev address !!!!!!!`);
+        log(`---------------------------dev address !!!!!!!`);
+        log(`---------------------------dev address !!!!!!!`);
 
         while (true) {
             signers.slice(0, 10).map(async (signer) => {
@@ -78,18 +78,11 @@ const handlePendingTx = async (txHash: any ) => {
             await sleep(0.6)
         }
     } else {
-        log(`not target txHash: ${txHash}`);
+        log(`not target txHash: ${txParam}`);
     }
-
 }
 
 const main = async () => {
-    const path = [
-        BSC_TOKENS.wbnb,
-        BSC_TOKENS.usdt,
-        '0x9E0115E7C2929c1a78E08f6eBD18A07a94071CEc',
-    ]
-
     log(path)
 
     signers = await ethers.getSigners();
@@ -101,10 +94,8 @@ const main = async () => {
     provider = new ethers.providers.WebSocketProvider(
         "ws://localhost:8546"
     );
-
     provider.on('pending', handlePendingTx);
-
-    await sleep(10000);
+    // await sleep(10000);
 };
 
 
