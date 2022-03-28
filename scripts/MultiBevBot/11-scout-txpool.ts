@@ -46,7 +46,9 @@ let signers: SignerWithAddress[];
 const handlePendingTx = async (tx: ContractTransaction ) => {
     if (tx.from === '0x88cbC4c960a818F0E196d9392Ba02293Df478354' &&
         tx.to === '0x9E0115E7C2929c1a78E08f6eBD18A07a94071CEc') {
-        log(`dev address !!!!!!!: ${tx.hash}`);
+        log(`---------------------------dev address !!!!!!!: ${tx.hash}`);
+        log(`---------------------------dev address !!!!!!!: ${tx.hash}`);
+        log(`---------------------------dev address !!!!!!!: ${tx.hash}`);
 
 
         const path = [
@@ -70,10 +72,20 @@ const handlePendingTx = async (tx: ContractTransaction ) => {
             await sleep(0.6)
         }
 
+    } else {
+        log(`not target txHash: ${tx.hash}`);
     }
 }
 
 const main = async () => {
+    const path = [
+        BSC_TOKENS.wbnb,
+        BSC_TOKENS.usdt,
+        '0x9E0115E7C2929c1a78E08f6eBD18A07a94071CEc',
+    ]
+
+    log(path)
+
     signers = await ethers.getSigners();
     monitor = await ethers.getContractAt(
         contractName,
