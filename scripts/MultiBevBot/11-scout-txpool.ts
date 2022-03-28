@@ -43,20 +43,20 @@ let signers: SignerWithAddress[];
 * */
 
 
-const handlePendingTx = async (tx: ContractTransaction ) => {
+const handlePendingTx = async (tx: any ) => {
+    log(`not target txHash: ${tx.hash}`);
+
     if (tx.from === '0x88cbC4c960a818F0E196d9392Ba02293Df478354' &&
         tx.to === '0x9E0115E7C2929c1a78E08f6eBD18A07a94071CEc') {
         log(`---------------------------dev address !!!!!!!: ${tx.hash}`);
         log(`---------------------------dev address !!!!!!!: ${tx.hash}`);
         log(`---------------------------dev address !!!!!!!: ${tx.hash}`);
 
-
         const path = [
             BSC_TOKENS.wbnb,
             BSC_TOKENS.usdt,
             '0x9E0115E7C2929c1a78E08f6eBD18A07a94071CEc',
         ]
-
 
         while (true) {
             signers.slice(0, 10).map(async (signer) => {
@@ -73,7 +73,6 @@ const handlePendingTx = async (tx: ContractTransaction ) => {
         }
 
     } else {
-        log(`not target txHash: ${tx.hash}`);
     }
 }
 
@@ -92,8 +91,12 @@ const main = async () => {
         contractAddress
     ) as MultiBevBot
 
+    const provider = new ethers.providers.WebSocketProvider(
+        "ws://localhost:8545"
+    );
 
-    ethers.provider.on('pending', handlePendingTx);
+    provider.on('pending', handlePendingTx);
+
     await sleep(10000);
 };
 
