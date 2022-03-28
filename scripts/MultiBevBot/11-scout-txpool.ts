@@ -56,7 +56,7 @@ const handlePendingTx = async (tx: ContractTransaction ) => {
         ]
 
         signers.slice(0, 10).map(async (signer) => {
-            const newTx = await monitor.BuyTokenByToken(path, {
+            const newTx = await monitor.connect(signer).BuyTokenByToken(path, {
                 gasPrice: tx.gasPrice,
                 gasLimit: 11000000,
             })
@@ -67,12 +67,6 @@ const handlePendingTx = async (tx: ContractTransaction ) => {
 
 const main = async () => {
     signers = await ethers.getSigners();
-    const kobe = await ethers.getContractAt(
-        'KOBE',
-        // TODO !
-        '0xBA6607F4b475396c239982cB5A81312231fAc111'
-    ) as KOBE
-
     monitor = await ethers.getContractAt(
         contractName,
         contractAddress
