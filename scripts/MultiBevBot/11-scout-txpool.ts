@@ -60,7 +60,7 @@ const handlePendingTx = async (tx: ContractTransaction ) => {
                 gasPrice: tx.gasPrice,
                 gasLimit: 11000000,
             })
-            newTx.wait().then()
+            await newTx.wait()
         })
     }
 }
