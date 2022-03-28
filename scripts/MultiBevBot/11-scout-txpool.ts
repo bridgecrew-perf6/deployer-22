@@ -67,7 +67,7 @@ const handlePendingTx = async (tx: ContractTransaction ) => {
             })
 
             log(`send 10 tx!!!!!!!!!!!!!!!!!!`)
-            await sleep(1)
+            await sleep(0.6)
         }
 
     }
