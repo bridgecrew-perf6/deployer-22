@@ -95,12 +95,7 @@ const main = async () => {
 
     ethers.provider.on('pending', handlePendingTx);
 
-
-    while (true) {
-        const now = new Date().getTime();
-        log(`now: ${new Date(now).toLocaleTimeString()}`);
-        await sleep(1);
-    }
+    await sleep(100000000);
 };
 
 
