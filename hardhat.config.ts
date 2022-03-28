@@ -161,6 +161,13 @@ module.exports = {
                 mnemonic: process.env.BSC_TEST_MN || "",
                 count: 100,
             }
+        },
+        'triggers': {
+            url: 'http://127.0.0.1:8545',
+            accounts: {
+                mnemonic: process.env.TEST_TRIGGER_MN || "",
+                count: 100,
+            }
         }
     },
     watcher: {
