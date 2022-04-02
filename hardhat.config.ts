@@ -158,7 +158,7 @@ module.exports = {
         'msi-1': {
             url: 'http://192.168.31.114:8545',
             accounts: {
-                mnemonic: process.env.BSC_TEST_MN || "",
+                mnemonic: process.env.TEST_TRIGGER_MN || "",
                 count: 100,
             }
         },

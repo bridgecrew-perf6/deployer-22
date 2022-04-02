@@ -12,11 +12,7 @@ const pancakeRouter = '0x10ED43C718714eb63d5aA57B78B54704E256024E'
 let deploymentsObj = require('./mainnet/bsc-56-deploy-MultiBevBot.json');
 let args = [];
 const fs = require('fs');
-const { ContractName: contractName, ContractAddress: contractAddress } = deploymentsObj;
 
-
-let monitor: MultiBevBot, operator: SignerWithAddress;
-let signers: SignerWithAddress[];
 /*
 {
   hash: '0xba06c835ecaa090a8cfab529fb78611d0b420ec4eb96796c74a96dbe243adad3',
@@ -49,6 +45,10 @@ const path = [
     // BSC_TOKENS.usdt,
     '0x7C61DA1242580D7BA195c01A935624b04468f0bC',
 ]
+let monitor: MultiBevBot, operator: SignerWithAddress;
+let signers: SignerWithAddress[];
+const contractName = 'MultiBevBot'
+const contractAddress = '0xbf9f6A075406e15742d904d484eb79F5be08501b'
 
 const handlePendingTx = async (txParam: any ) => {
     let tx: any
@@ -61,7 +61,7 @@ const handlePendingTx = async (txParam: any ) => {
     // if (tx.from === '0x88cbC4c960a818F0E196d9392Ba02293Df478354' &&
     //     tx.to === '0x9E0115E7C2929c1a78E08f6eBD18A07a94071CEc') {
     if (tx.from === '0xf21B4ee02f58b0FD02B8dD24b699DaC14e11b974' &&
-        tx.to === '0x7C61DA1242580D7BA195c01A935624b04468f0bC') {
+        tx.to === '0xec2DFaDCAa9b397aC57cC96De8391C2805709D0F') {
         log(`---------------------------dev address !!!!!!!`);
         log(`---------------------------dev address !!!!!!!`);
         log(`---------------------------dev address !!!!!!!`);

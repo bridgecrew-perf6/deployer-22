@@ -1,6 +1,6 @@
 {
-  "ContractName": "Monitor",
-  "ContractAddress": "0xA84b18E7A69300191CA5358b1E6265bD2be2d203",
+  "ContractName": "BevBot",
+  "ContractAddress": "0x9A4F21fafe13cBc1767a908884757085C625b49F",
   "ContractDeployArgs": [
     "0x10ED43C718714eb63d5aA57B78B54704E256024E",
     [
@@ -9,6 +9,6 @@
       "0x55d398326f99059fF775485246999027B3197955"
     ]
   ],
-  "Deployer": "0x45a9f347197061C1b9b543122CF34f70ba64e8B2",
-  "DeployTime": "3/28/2022, 2:03:51 PM"
+  "Deployer": "0xf21B4ee02f58b0FD02B8dD24b699DaC14e11b974",
+  "DeployTime": "3/28/2022, 9:37:01 PM"
 }

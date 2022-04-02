@@ -10,7 +10,7 @@ const {
 } = require('../utils/util');
 
 // ! important
-let deploymentsObj = require('./mainnet/bsc-56-deploy-BevBot.json');
+let deploymentsObj = require('./mainnet/bsc-56-deploy-Monitor.json');
 let args = [];
 const fs = require('fs');
 const { ContractName: contractName, ContractAddress: contractAddress } = deploymentsObj;

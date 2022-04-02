@@ -4,7 +4,7 @@ const { toHuman, dateFormat, log } = require('../utils/util');
 
 // ! important
 const operation = 'upgrade';
-const deploymentsObj = require('./mainnet/bsc-56-deploy-BevBot.json');
+const deploymentsObj = require('./mainnet/bsc-56-deploy-Monitor.json');
 const fs = require('fs');
 const { ContractName: contractName, ContractAddress: contractAddress } = deploymentsObj;
 
