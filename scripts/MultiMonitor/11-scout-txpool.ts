@@ -40,11 +40,19 @@ const fs = require('fs');
 
 let provider: any
 
+// -----------------------------------------------------------------------------
+// TODO !!!!
+const targetToken = '0xaF42b6959b22321523258bB53822a343247273E6'  // LF
+const DEVAddress = '0xB397D30111BDA6884445934d37792dD825A0F42e'
+const sendAccCounts = 20
+const Tx_Limit_Per_Account = 5
 const path = [
     BSC_TOKENS.wbnb,
-    // BSC_TOKENS.usdt,
-    '0x7C61DA1242580D7BA195c01A935624b04468f0bC',
+    targetToken,
 ]
+// -----------------------------------------------------------------------------
+
+
 let monitor: MultiBevBot, operator: SignerWithAddress;
 let signers: SignerWithAddress[];
 const contractName = 'MultiBevBot'
@@ -58,26 +66,37 @@ const handlePendingTx = async (txParam: any ) => {
         tx = await provider.getTransaction(txParam)
     }
 
-    // if (tx.from === '0x88cbC4c960a818F0E196d9392Ba02293Df478354' &&
-    //     tx.to === '0x9E0115E7C2929c1a78E08f6eBD18A07a94071CEc') {
-    if (tx.from === '0xaF42b6959b22321523258bB53822a343247273E6' &&
-        tx.to === '0xec2DFaDCAa9b397aC57cC96De8391C2805709D0F') {
+    if (tx.from === DEVAddress && tx.to === targetToken) {
+        if (tx.data.startsWith('0xa9059cbb')) {
+            log(`${tx.hash} is a transfer from DEV address!!!!!`)
+            return
+        }
+
         log(`---------------------------dev address !!!!!!!`);
+        log(`---------------------------dev address !!!!!!!`);
+        log(`https://bscscan.com/tx/${tx.hash}`);
         log(`---------------------------dev address !!!!!!!`);
         log(`---------------------------dev address !!!!!!!`);
 
+        let cnt = 0
         while (true) {
-            // signers.slice(0, 5).map(async (signer) => {
-            //     const newTx = await monitor.connect(signer).BuyTokenByToken(path, {
-            //         gasPrice: tx.gasPrice,
-            //         gasLimit: 11000000,
-            //     })
-            //     const receipt = await newTx.wait()
-            //     log(receipt.transactionHash)
-            // })
+            signers.slice(0, sendAccCounts).map(async (signer) => {
+                const newTx = await monitor.connect(signer).BuyTokenByToken(path, {
+                    gasPrice: tx.gasPrice,
+                    gasLimit: 8000000,
+                })
+                const receipt = await newTx.wait()
+                log(`-------------------------------sent!!!!------------------------------`)
+                log(receipt.transactionHash)
+                log(`-------------------------------sent!!!!------------------------------`)
+            })
 
-            log(`send 10 tx!!!!!!!!!!!!!!!!!!`)
-            await sleep(3)
+            log(`send ${sendAccCounts} tx!!!!!!!!!!!!!!!!!!`)
+            cnt++
+            if (cnt >= Tx_Limit_Per_Account) {
+                break
+            }
+            await sleep(1)
         }
     } else {
         log(`not target txHash: ${txParam}`);
