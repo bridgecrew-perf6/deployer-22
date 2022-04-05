@@ -7,8 +7,11 @@ const getAddressFromBytes32 = (bytes32Str) => {
 };
 
 const sleep = async (seconds) => {
-    // console.log(`waiting for block confirmations, about ${seconds}s`)
     await new Promise((resolve) => setTimeout(resolve, seconds * 1000));
+};
+
+const sleepMS = async (ms) => {
+    await new Promise((resolve) => setTimeout(resolve, ms));
 };
 
 const waitingForReceipt = async (provider, res) => {
@@ -193,8 +196,6 @@ const toHuman = (x, fractionDigits = 2) => {
     return (x / 1e18).toFixed(fractionDigits);
 };
 
-const { log } = console;
-
 const addOperations = (deployments, operation, ...args) => {
     let timeStr = new Date().toLocaleString();
 
@@ -208,6 +209,11 @@ const addOperations = (deployments, operation, ...args) => {
     });
 
     return deployments;
+};
+
+const log = (...args) => {
+    const timeStrFmt = dateFormat('[HH:MM:SS]', new Date());
+    console.log(timeStrFmt, ...args);
 };
 
 const recordOperation = async (deployments, contractName, operation, rootPath) => {
@@ -239,6 +245,7 @@ async function waitTx(txRequest) {
 module.exports = {
     dateFormat,
     sleep,
+    sleepMS,
     log,
     waitingForReceipt,
     deployContract,

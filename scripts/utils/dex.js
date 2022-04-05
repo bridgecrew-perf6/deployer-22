@@ -2,6 +2,7 @@ const { generateCalls, multiCall, BSCMulticallAddress } = require('./multicall')
 const { ethers } = require('hardhat');
 const { hexToBigNumber } = require('./string');
 const ERC20File = require('./abi/ERC20.json');
+const MultiCallFile = require('./abi/MultiCall.json');
 
 const getTokenInstance = async (contractAddress) => {
     return await ethers.getContractAt('IERC20', contractAddress);
@@ -76,7 +77,7 @@ const getTokenValueFromLpAmount = async (lpTokenInfo, basicTokenInfo, lpAmount) 
 
 const getETHBalances = async (addresses) => {
     const callObjVec = [];
-    const multiCallInstance = await ethers.getContractAt('Multicall', BSCMulticallAddress);
+    const multiCallInstance = await ethers.getContractAt(MultiCallFile, BSCMulticallAddress);
     for (let i = 0; i < addresses.length; i++) {
         callObjVec.push({
             target: BSCMulticallAddress,
