@@ -81,8 +81,9 @@ const contractAddress = '0xbf9f6A075406e15742d904d484eb79F5be08501b';
 
 const checkTx = (tx: ContractTransaction): Result | null => {
     if (
-        tx.from === DEVAddress &&
-        tx.to === targetToken
+        true
+        // tx.from === DEVAddress &&
+        // tx.to === targetToken
     ) {
         for (const funcName in iFace.functions) {
             try {
