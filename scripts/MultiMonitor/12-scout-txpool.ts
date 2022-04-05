@@ -133,7 +133,7 @@ const handlePendingTx = async (txObject: any) => {
 */
     }
 
-    log(`not target txHash: ${txObject}`);
+    log(`not target txHash: ${tx.hash}`);
 };
 
 const main = async () => {
