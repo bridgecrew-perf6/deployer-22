@@ -4,6 +4,10 @@ import { formatEther } from 'ethers/lib/utils';
 import { BigNumber, BigNumberish, ContractReceipt, ContractTransaction } from 'ethers';
 import {Result} from "@ethersproject/abi";
 import {TransactionDescription} from "@ethersproject/abi/src.ts/interface";
+import {Transaction} from "@ethersproject/transactions";
+import {WebSocketProvider} from "@ethersproject/providers";
+import {TransactionResponse} from "@ethersproject/abstract-provider";
+
 const _ = require('lodash');
 const { ethers } = require('hardhat');
 const { sleep, sleepMS, log, dateFormat } = require('../utils/util');
@@ -53,7 +57,7 @@ export interface BotContract {
     getTarget: () => Promise<any[]>;
 }
 
-let provider: any;
+let websocketProvider: WebSocketProvider;
 
 // -----------------------------------------------------------------------------
 // TODO !!!!
@@ -80,7 +84,7 @@ let signers: SignerWithAddress[];
 const contractName = 'MultiBevBot';
 const contractAddress = '0xbf9f6A075406e15742d904d484eb79F5be08501b';
 
-const parseTx = (tx: ContractTransaction): TransactionDescription | null => {
+const parseTx = (tx: Transaction): TransactionDescription | null => {
     try {
         return  iFace.parseTransaction(tx);
     } catch (e) {
@@ -90,9 +94,9 @@ const parseTx = (tx: ContractTransaction): TransactionDescription | null => {
 
 
 const handlePendingTx = async (txObject: any) => {
-    let tx: ContractTransaction = (txObject.from && txObject.to)
-        ? txObject as ContractTransaction
-        : await provider.getTransaction(txObject) as ContractTransaction;
+    let tx: TransactionResponse = (txObject.from && txObject.to)
+        ? txObject as TransactionResponse
+        : await websocketProvider.getTransaction(txObject) as TransactionResponse;
 
     const txDesc = parseTx(tx);
     if (txDesc) {
@@ -136,8 +140,8 @@ const main = async () => {
     signers = await ethers.getSigners();
     multiBevBot = (await ethers.getContractAt(contractName, contractAddress)) as MultiBevBot;
 
-    provider = new ethers.providers.WebSocketProvider(WEBSOCKET_URL);
-    provider.on('pending', handlePendingTx);
+    websocketProvider = new ethers.providers.WebSocketProvider(WEBSOCKET_URL);
+    websocketProvider.on('pending', handlePendingTx);
 
     while (true) {
         await loadConfig(multiBevBot)
