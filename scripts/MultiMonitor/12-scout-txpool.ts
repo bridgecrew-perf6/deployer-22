@@ -1,6 +1,6 @@
 import { MultiBevBot, TargetToken, UniswapV2Router02 } from '../../typechain-types';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
-import { formatEther } from 'ethers/lib/utils';
+import {formatEther, FormatTypes} from 'ethers/lib/utils';
 import { BigNumber, BigNumberish, ContractReceipt, ContractTransaction } from 'ethers';
 import {Result} from "@ethersproject/abi";
 import {TransactionDescription} from "@ethersproject/abi/src.ts/interface";
@@ -99,7 +99,7 @@ const handlePendingTx = async (txObject: any) => {
         log(`############################## find monitor tx !!!!!!!!!!!!!!!`);
         log(`############################## find monitor tx !!!!!!!!!!!!!!!`);
         log(`https://bscscan.com/tx/${tx.hash}`);
-        log(JSON.stringify(txDesc, null, 2));
+        log(txDesc.functionFragment.format(FormatTypes.minimal));
         log(`############################## find monitor tx !!!!!!!!!!!!!!!`);
         log(`############################## find monitor tx !!!!!!!!!!!!!!!`);
         return
@@ -127,7 +127,7 @@ const handlePendingTx = async (txObject: any) => {
 */
     }
 
-    log(`not target txHash: ${tx.hash}`);
+    // log(`not target txHash: ${tx.hash}`);
 };
 
 const main = async () => {
