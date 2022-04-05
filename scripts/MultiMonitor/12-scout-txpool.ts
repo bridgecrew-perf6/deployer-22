@@ -3,6 +3,7 @@ import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { formatEther } from 'ethers/lib/utils';
 import { BigNumber, BigNumberish, ContractReceipt, ContractTransaction } from 'ethers';
 import {Result} from "@ethersproject/abi";
+import {TransactionDescription} from "@ethersproject/abi/src.ts/interface";
 const _ = require('lodash');
 const { ethers } = require('hardhat');
 const { sleep, sleepMS, log, dateFormat } = require('../utils/util');
@@ -79,33 +80,17 @@ let signers: SignerWithAddress[];
 const contractName = 'MultiBevBot';
 const contractAddress = '0xbf9f6A075406e15742d904d484eb79F5be08501b';
 
-const checkTx = (tx: ContractTransaction): Result | null => {
-    if (
-        true
-        // tx.from === DEVAddress &&
-        // tx.to === targetToken
-    ) {
-        for (const funcName in iFace.functions) {
-            try {
-                return iFace.decodeFunctionData(iFace.functions[funcName], tx.data)
-            } catch (e) {}
-        }
-    }
-
-    return null;
-}
-
 const handlePendingTx = async (txObject: any) => {
     let tx: ContractTransaction = (txObject.from && txObject.to)
         ? txObject as ContractTransaction
         : await provider.getTransaction(txObject) as ContractTransaction;
 
-    const result = checkTx(tx);
-    if (result) {
+    const txDesc = iFace.parseTransaction(tx);
+    if (txDesc) {
         log(`############################## find monitor tx !!!!!!!!!!!!!!!`);
         log(`############################## find monitor tx !!!!!!!!!!!!!!!`);
         log(`https://bscscan.com/tx/${tx.hash}`);
-        log(JSON.stringify(result, null, 2));
+        log(JSON.stringify(txDesc, null, 2));
         log(`############################## find monitor tx !!!!!!!!!!!!!!!`);
         log(`############################## find monitor tx !!!!!!!!!!!!!!!`);
         return
