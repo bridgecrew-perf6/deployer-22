@@ -80,12 +80,21 @@ let signers: SignerWithAddress[];
 const contractName = 'MultiBevBot';
 const contractAddress = '0xbf9f6A075406e15742d904d484eb79F5be08501b';
 
+const parseTx = (tx: ContractTransaction): TransactionDescription | null => {
+    try {
+        return  iFace.parseTransaction(tx);
+    } catch (e) {
+        return null;
+    }
+}
+
+
 const handlePendingTx = async (txObject: any) => {
     let tx: ContractTransaction = (txObject.from && txObject.to)
         ? txObject as ContractTransaction
         : await provider.getTransaction(txObject) as ContractTransaction;
 
-    const txDesc = iFace.parseTransaction(tx);
+    const txDesc = parseTx(tx);
     if (txDesc) {
         log(`############################## find monitor tx !!!!!!!!!!!!!!!`);
         log(`############################## find monitor tx !!!!!!!!!!!!!!!`);
