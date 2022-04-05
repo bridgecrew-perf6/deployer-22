@@ -100,7 +100,7 @@ const handlePendingTx = async (txObject: any) => {
         log(JSON.stringify({
             sighash: txDesc.sighash,
             signature: txDesc.signature,
-            args: txDesc.args,
+            // args: txDesc.args,
             value: txDesc.value,
             url: `https://bscscan.com/tx/${tx.hash}`
         }, null, 2));
