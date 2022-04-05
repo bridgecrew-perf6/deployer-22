@@ -35,7 +35,8 @@ const main = async () => {
     ];
     args = [path];
 
-    tx = await contract[operation](...args, {});
+    tx = await contract.populateTransaction[operation]();
+    log(tx)
 };
 
 main()

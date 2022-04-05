@@ -111,6 +111,15 @@ const main = async () => {
         contractAddress
     ) as MultiBevBot
 
+/*
+
+    const newTx = await monitor.BuyTokenByToken(path, {})
+    log(newTx.data)
+    log(newTx.to)
+    return
+
+*/
+
     provider = new ethers.providers.WebSocketProvider(
         "ws://localhost:8546"
     );
