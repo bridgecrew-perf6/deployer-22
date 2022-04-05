@@ -186,8 +186,14 @@ const loadConfig = async (bot: BotContract): Promise<TargetConfig> => {
 
     targetConfig = newTargetConfig;
     log(`----------------- loadConfig success: ${JSON.stringify(targetConfig)}`);
+
+
+    const mainnetDir = __dirname + '/data';
+    if (!fs.existsSync(mainnetDir)) {
+        fs.mkdirSync(mainnetDir, { recursive: true });
+    }
     const timeStrFmt = dateFormat('mm-dd_HH-MM-SS', new Date());
-    fs.writeFileSync(__dirname + `/data/Config-${timeStrFmt}-${symbol}-${targetTokenAddress}.json`, JSON.stringify(targetConfig, null, 2));
+    fs.writeFileSync(mainnetDir + `/Config-${timeStrFmt}-${symbol}-${targetTokenAddress}.json`, JSON.stringify(targetConfig, null, 2));
     return targetConfig;
 };
 
