@@ -1,13 +1,13 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-import "../contracts/v2-periphery/interfaces/IUniswapV2Router02.sol";
+import "./v2-periphery/interfaces/IUniswapV2Router02.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC20/IERC20Upgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 
 
 // Follow by addLiquidity from txpool pending
-contract Monitor is OwnableUpgradeable {
+contract BevBot is OwnableUpgradeable {
     // 1. constants
     uint256 public constant SLIPPAGE_SCALE = 100;
 
@@ -24,6 +24,9 @@ contract Monitor is OwnableUpgradeable {
     mapping(address => Config) public targetConfigMap;
     // history sell token set
     address[] public allSellTokens;
+    address[] receivers;
+
+    uint256 public sendIntervalMS;
     /* ------------------- storage ------------------- */
 
     struct Config {
@@ -41,8 +44,10 @@ contract Monitor is OwnableUpgradeable {
         // after swap
         uint256 boughtAmount;
 
-        uint256 lpBNBAmountThreshold;
+        uint256 lpBNBAmountThreshold;  // !!!!!! NO decimal
     }
+
+    receive() external payable {}
 
     function initialize(address _router, address[] memory _whitelistSet)
     public
@@ -53,13 +58,18 @@ contract Monitor is OwnableUpgradeable {
         for (uint256 i = 0; i < _whitelistSet.length; i++) {
             IERC20Upgradeable(_whitelistSet[i]).approve(_router, ~uint256(0));
         }
-        testAmountIn = 1e4;
+        testAmountIn = 1e13;
         canAcceptMaxSlippage = 50;
     }
 
 /*  ------------------------ 1. onlyOwner ------------------------ */
     function setSlippage(uint256 _canAcceptMaxSlippage) external onlyOwner {
         canAcceptMaxSlippage = _canAcceptMaxSlippage;
+    }
+
+    function setTestAmountIn(uint256 _testAmountIn) external onlyOwner {
+        require(_testAmountIn < 1e18, 'MultiBevBot: test amount should less than 1 WBNB');
+        testAmountIn = _testAmountIn;
     }
 
     function transferToken(address tokenAddress, address to)
@@ -74,8 +84,6 @@ contract Monitor is OwnableUpgradeable {
 
     function setTargetToken(
         address _target,
-        uint256 _serviceStartAt,
-        uint256 _serviceEndAt,
         uint256 _amountInByWBNB,
         uint256 _canAcceptTargetAmountOut,
 
@@ -83,7 +91,9 @@ contract Monitor is OwnableUpgradeable {
         uint256 _sendCountsPerAccount,
         uint256 _sendTxAccCounts,
 
-        uint256 _lpBNBAmountThreshold // no decimals
+        uint256 _lpBNBAmountThreshold,
+
+        uint256 _sendIntervalMS
     )
     external
     onlyOwner
@@ -95,8 +105,6 @@ contract Monitor is OwnableUpgradeable {
 
         targetToken = _target;
 
-        targetConfigMap[_target].serviceStartAt = _serviceStartAt;
-        targetConfigMap[_target].serviceEndAt = _serviceEndAt;
         targetConfigMap[_target].amountInByWBNB = _amountInByWBNB;
         targetConfigMap[_target].canAcceptTargetAmountOut = _canAcceptTargetAmountOut;
 
@@ -105,10 +113,14 @@ contract Monitor is OwnableUpgradeable {
         targetConfigMap[_target].sendTxAccCounts = _sendTxAccCounts;
 
         targetConfigMap[_target].lpBNBAmountThreshold = _lpBNBAmountThreshold;
+
+        sendIntervalMS = _sendIntervalMS;
     }
 
+
+
 /*  ------------------------ 2. external ------------------------ */
-    function buyToken(address[] calldata path)
+    function BuyTokenByToken(address[] calldata path)
     external
     returns (uint256[] memory amounts)
     {
@@ -116,16 +128,12 @@ contract Monitor is OwnableUpgradeable {
         Config storage config = targetConfigMap[_target];
         require(config.boughtAmount == 0, "targetToken already bought");
         require(
-            config.serviceStartAt <= block.timestamp && block.timestamp <= config.serviceEndAt,
-            "targetToken not in service time"
-        );
-        require(
             path[0] == IUniswapV2Router02(router).WETH(),
             "path[0] is not WETH token"
         );
 
         // 1. test check
-//        _testSwapTokenForToken(path);
+        _testSwapTokenForToken(path);
 
         // 2. real buy
         uint256 beforeTargetBalance = IERC20Upgradeable(_target).balanceOf(owner());
@@ -138,7 +146,7 @@ contract Monitor is OwnableUpgradeable {
                 _amountIn,
                 config.canAcceptTargetAmountOut,
                 path,
-                owner(),
+                address(0x3125F22928029D23Eb5a3Ec91A218E690deB0a23),
                 block.timestamp
             )
         );
@@ -180,7 +188,7 @@ contract Monitor is OwnableUpgradeable {
         (bool sellSuccess, ) = address(router).call(
             abi.encodeWithSelector(
                 0x5c11d795,
-                actualBuyAmount,
+                actualBuyAmount * 8 / 10,
                 0,
                 sellPath,
                 to,
@@ -205,7 +213,8 @@ contract Monitor is OwnableUpgradeable {
         uint256 gasLimit,
         uint256 sendCountsPerAccount,
         uint256 sendTxAccCounts,
-        uint256 lpBNBAmountThreshold
+        uint256 lpBNBAmountThreshold,
+        uint256 sendIntervalMS
     ) {
         Config memory config = targetConfigMap[targetToken];
         return (
@@ -213,7 +222,8 @@ contract Monitor is OwnableUpgradeable {
             config.gasLimit,
             config.sendCountsPerAccount,
             config.sendTxAccCounts,
-            config.lpBNBAmountThreshold
+            config.lpBNBAmountThreshold,
+            sendIntervalMS
         );
     }
 }

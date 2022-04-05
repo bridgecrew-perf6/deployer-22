@@ -4,7 +4,7 @@ const { BSC_TOKENS, unit } = require('../utils/constants');
 const { toHuman, dateFormat, log } = require('../utils/util');
 
 const operation = 'deploy';
-const contractName = 'Monitor';
+const contractName = 'BevBot';
 const pancakeRouter = '0x10ED43C718714eb63d5aA57B78B54704E256024E';
 const whiteMap = [BSC_TOKENS.wbnb, BSC_TOKENS.busd, BSC_TOKENS.usdt];
 
