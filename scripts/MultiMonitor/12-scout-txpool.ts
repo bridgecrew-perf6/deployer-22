@@ -56,8 +56,8 @@ let provider: any;
 
 // -----------------------------------------------------------------------------
 // TODO !!!!
-// const WEBSOCKET_URL = 'ws://localhost:8546'
-const WEBSOCKET_URL = 'ws://192.168.31.114:8546';
+const WEBSOCKET_URL = 'ws://localhost:8546'
+// const WEBSOCKET_URL = 'ws://192.168.31.114:8546';
 const LOAD_CONFIG_INTERVAL_SECONDS = 2 * 60; // 3 minutes
 
 const targetToken = '0xaF42b6959b22321523258bB53822a343247273E6'; // LF
