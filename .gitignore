@@ -19,3 +19,4 @@ config**.json
 **typechain-types
 scripts/Bot
 .env.example
+logs
