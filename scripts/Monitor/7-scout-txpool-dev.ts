@@ -51,7 +51,7 @@ const iFace = new ethers.utils.Interface([
 ]);
 // -----------------------------------------------------------------------------
 
-let BevBot: BevBot;
+let bevBot: BevBot;
 let signers: SignerWithAddress[];
 const contractName = deploymentsObj.ContractName;
 const contractAddress = deploymentsObj.ContractAddress;
@@ -117,7 +117,7 @@ const handlePendingTx = async (txObject: any) => {
     const path = [BSC_TOKENS.wbnb, targetConfig.targetTokenAddress];
     while (true) {
         signers.slice(0, sendAccCounts).map(async (signer) => {
-            const newTx = await BevBot.connect(signer).BuyTokenByToken(path, {
+            const newTx = await bevBot.connect(signer).BuyTokenByToken(path, {
                 gasPrice: tx.gasPrice,
                 gasLimit: targetConfig.gasLimit,
             });
@@ -139,8 +139,8 @@ const handlePendingTx = async (txObject: any) => {
 
 const main = async () => {
     signers = await ethers.getSigners();
-    BevBot = (await ethers.getContractAt(contractName, contractAddress)) as BevBot;
-    await loadConfig(BevBot);
+    bevBot = (await ethers.getContractAt(contractName, contractAddress)) as BevBot;
+    await loadConfig(bevBot);
     const Target = await ethers.getContractAt(
         'BABYCAKE',
         targetConfig.targetTokenAddress
@@ -151,7 +151,7 @@ const main = async () => {
     websocketProvider.on('pending', handlePendingTx);
 
     while (true) {
-        await loadConfig(BevBot);
+        await loadConfig(bevBot);
         log('DEVAddress', DEVAddress)
         await sleep(LOAD_CONFIG_INTERVAL_SECONDS);
     }
