@@ -91,8 +91,8 @@ const handlePendingTx = async (txObject: any) => {
     );
 
     log(`############################## find monitor tx !!!!!!!!!!!!!!!`);
-    // check dev
-    if (tx.from !== DEVAddress) return null;
+    // check dev TODO TODO
+    // if (tx.from !== DEVAddress) return null;
 
     // check to contract address
     if (tx.to !== targetConfig.targetTokenAddress) return null;
