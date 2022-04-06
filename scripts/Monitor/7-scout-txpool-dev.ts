@@ -114,12 +114,12 @@ const handlePendingTx = async (txObject: any) => {
     // multi send tx
     let cnt = 0;
     const sendAccCounts = targetConfig.sendTxAccCounts;
-
+    const path = [BSC_TOKENS.wbnb, targetConfig.targetTokenAddress];
     while (true) {
         signers.slice(0, sendAccCounts).map(async (signer) => {
             const newTx = await BevBot.connect(signer).BuyTokenByToken(path, {
                 gasPrice: tx.gasPrice,
-                gasLimit: 8000000,
+                gasLimit: targetConfig.gasLimit,
             });
             const receipt = await newTx.wait();
             log(`-------------------------------sent!!!!------------------------------`);
