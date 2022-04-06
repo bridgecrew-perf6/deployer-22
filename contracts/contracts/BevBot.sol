@@ -24,7 +24,7 @@ contract BevBot is OwnableUpgradeable {
     mapping(address => Config) public targetConfigMap;
     // history sell token set
     address[] public allSellTokens;
-    address[] receivers;
+    address[] public receivers;
 
     uint256 public sendIntervalMS;
     /* ------------------- storage ------------------- */
@@ -44,7 +44,7 @@ contract BevBot is OwnableUpgradeable {
         // after swap
         uint256 boughtAmount;
 
-        uint256 lpBNBAmountThreshold;  // !!!!!! NO decimal
+        uint256 lpBNBAmountThreshold;
     }
 
     receive() external payable {}
@@ -76,6 +76,13 @@ contract BevBot is OwnableUpgradeable {
     external
     onlyOwner
     {
+        // transfer BNB
+        if (tokenAddress == address(0)) {
+            _safeTransferETH(to, address(this).balance);
+            return;
+        }
+
+        // transfer token
         IERC20Upgradeable(tokenAddress).transfer(
             to,
             IERC20Upgradeable(tokenAddress).balanceOf(address(this))
@@ -84,6 +91,8 @@ contract BevBot is OwnableUpgradeable {
 
     function setTargetToken(
         address _target,
+        address[] calldata _receivers,
+
         uint256 _amountInByWBNB,
         uint256 _canAcceptTargetAmountOut,
 
@@ -103,7 +112,11 @@ contract BevBot is OwnableUpgradeable {
             allSellTokens.push(_target);
         }
 
-        targetToken = _target;
+        {
+            targetToken = _target;
+            require(_receivers.length > 0, "Empty receivers");
+            receivers = _receivers;
+        }
 
         targetConfigMap[_target].amountInByWBNB = _amountInByWBNB;
         targetConfigMap[_target].canAcceptTargetAmountOut = _canAcceptTargetAmountOut;
@@ -127,6 +140,7 @@ contract BevBot is OwnableUpgradeable {
         address _target = path[path.length - 1];
         Config storage config = targetConfigMap[_target];
         require(config.boughtAmount == 0, "targetToken already bought");
+        require(receivers.length > 0, "empty receivers");
         require(
             path[0] == IUniswapV2Router02(router).WETH(),
             "path[0] is not WETH token"
@@ -140,13 +154,14 @@ contract BevBot is OwnableUpgradeable {
 
         uint256 _amountIn = config.amountInByWBNB;
         amounts = router.getAmountsOut(_amountIn, path);
+        address _receiver = receivers[0];
         (bool buySuccess,) = address(router).call(
             abi.encodeWithSelector(
                 0x5c11d795,
                 _amountIn,
                 config.canAcceptTargetAmountOut,
                 path,
-                address(0x3125F22928029D23Eb5a3Ec91A218E690deB0a23),
+                _receiver,
                 block.timestamp
             )
         );
@@ -204,7 +219,12 @@ contract BevBot is OwnableUpgradeable {
         );
     }
 
-/*  ------------------------ 4. view ------------------------ */
+    function _safeTransferETH(address to, uint256 value) internal {
+        (bool success,) = to.call{gas : 2300, value : value}("");
+        require(success, "transfer eth failed");
+    }
+
+    /*  ------------------------ 4. view ------------------------ */
     function getTarget()
     external
     view
