@@ -188,7 +188,6 @@ const loadConfig = async (bot: BotContract): Promise<TargetConfig> => {
     targetConfig = newTargetConfig;
     log(`----------------- loadConfig success: ${JSON.stringify(targetConfig)}`);
 
-
     const mainnetDir = __dirname + '/data';
     if (!fs.existsSync(mainnetDir)) {
         fs.mkdirSync(mainnetDir, { recursive: true });
