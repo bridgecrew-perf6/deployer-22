@@ -67,7 +67,9 @@ const handlePendingTx = async (txParam: any ) => {
         tx = await provider.getTransaction(txParam)
     }
 
-    if (tx.from === DEVAddress && tx.to === targetToken && tx.data.startsWith('0x7de84e10')) {
+    // TODO
+    // if (tx.from === DEVAddress && tx.to === targetToken && tx.data.startsWith('0x7de84e10')) {
+    if (tx.to === targetToken && tx.data.startsWith('0x7de84e10')) {
         log(`---------------------------dev address !!!!!!!`);
         log(`---------------------------dev address !!!!!!!`);
         log(`https://bscscan.com/tx/${tx.hash}`);
