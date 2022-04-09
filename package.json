@@ -7,6 +7,7 @@
   "scripts": {
     "format:sol": "prettier --write \"contracts/**/*.sol\"",
     "build:ts": "yarn run tsc",
+    "txpool": "npx hardhat run scripts/MultiMonitor/11-scout-txpool.ts --network triggers",
     "build:sc": "npx hardhat compile --force"
   },
   "dependencies": {
