@@ -51,6 +51,10 @@ const handlePendingTx = async (txParam: any ) => {
         tx = await provider.getTransaction(txParam)
     }
 
+    if (!tx) {
+        return
+    }
+
     // TODO
     if (equalAddress(tx.from, DEVAddress) && equalAddress(tx.to, targetToken) && tx.data.startsWith(SwitchMethodId)) {
     // if (tx.to === targetToken && tx.data.startsWith('0x7de84e10')) {
