@@ -46,8 +46,8 @@ const targetToken = '0x0AFa3b6a59d2bc04a4572a3Fe411bc036961e875'  // Orange
 const DEVAddress = '0x78c6ce87acd18330a4584c4bbf148caaae576bee' //
 
 // TODO
-const sendAccCounts = 2
-const Tx_Limit_Per_Account = 1
+const sendAccCounts = 20
+const Tx_Limit_Per_Account = 2
 const path = [
     BSC_TOKENS.wbnb,
     targetToken,
@@ -68,8 +68,8 @@ const handlePendingTx = async (txParam: any ) => {
     }
 
     // TODO
-    // if (tx.from === DEVAddress && tx.to === targetToken && tx.data.startsWith('0x7de84e10')) {
-    if (tx.to === targetToken && tx.data.startsWith('0x7de84e10')) {
+    if (tx.from === DEVAddress && tx.to === targetToken && tx.data.startsWith('0x7de84e10')) {
+    // if (tx.to === targetToken && tx.data.startsWith('0x7de84e10')) {
         log(`---------------------------dev address !!!!!!!`);
         log(`---------------------------dev address !!!!!!!`);
         log(`https://bscscan.com/tx/${tx.hash}`);
