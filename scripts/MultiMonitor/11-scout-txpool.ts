@@ -58,7 +58,7 @@ const path = [
 let monitor: MultiBevBot, operator: SignerWithAddress;
 let signers: SignerWithAddress[];
 const contractName = 'MultiBevBot'
-const contractAddress = '0x761814DA0A97ED25Eb7F762E76Ef74bE501AC040'
+const contractAddress = '0x4Dd8304B292c3892360c5C24c81C75EdC6C2693f'
 
 const equalAddress = (a: string, b: string) => {
     return a.toLowerCase() === b.toLowerCase()
