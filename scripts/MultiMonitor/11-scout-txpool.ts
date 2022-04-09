@@ -116,11 +116,14 @@ const main = async () => {
     ) as MultiBevBot
 
     const targetContract = await ethers.getContractAt(
-        'BIFA',
+        'DTDToken',
         targetToken
     )
     DEVAddress = await targetContract.owner()
     log(`DEVAddress: ${DEVAddress}`)
+    if (DEVAddress === ethers.constants.AddressZero) {
+        throw new Error('DEVAddress is zero')
+    }
 
     provider = new ethers.providers.WebSocketProvider(
         "ws://localhost:8546"
