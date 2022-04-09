@@ -42,12 +42,13 @@ let provider: any
 
 // -----------------------------------------------------------------------------
 // TODO !!!!
-const targetToken = '0x0AFa3b6a59d2bc04a4572a3Fe411bc036961e875'  // Orange
-const DEVAddress = '0x78c6ce87acd18330a4584c4bbf148caaae576bee' //
+const targetToken = '0x74C71c2A0F22600F82c94cdc680065169949aedC'  // Orange
+let DEVAddress: string
+let SwitchMethodId = '0x7de84e10'
 
 // TODO
-const sendAccCounts = 20
-const Tx_Limit_Per_Account = 2
+const sendAccCounts = 5
+const Tx_Limit_Per_Account = 1
 const path = [
     BSC_TOKENS.wbnb,
     targetToken,
@@ -59,6 +60,10 @@ let signers: SignerWithAddress[];
 const contractName = 'MultiBevBot'
 const contractAddress = '0x761814DA0A97ED25Eb7F762E76Ef74bE501AC040'
 
+const equalAddress = (a: string, b: string) => {
+    return a.toLowerCase() === b.toLowerCase()
+}
+
 const handlePendingTx = async (txParam: any ) => {
     let tx: any
     if (txParam.from && txParam.to) {
@@ -68,7 +73,7 @@ const handlePendingTx = async (txParam: any ) => {
     }
 
     // TODO
-    if (tx.from === DEVAddress && tx.to === targetToken && tx.data.startsWith('0x7de84e10')) {
+    if (equalAddress(tx.from, DEVAddress) && equalAddress(tx.to, targetToken) && tx.data.startsWith(SwitchMethodId)) {
     // if (tx.to === targetToken && tx.data.startsWith('0x7de84e10')) {
         log(`---------------------------dev address !!!!!!!`);
         log(`---------------------------dev address !!!!!!!`);
@@ -78,7 +83,7 @@ const handlePendingTx = async (txParam: any ) => {
 
         let cnt = 0
         while (true) {
-            signers.slice(0, sendAccCounts).map(async (signer) => {
+            signers.slice(5, sendAccCounts + 5).map(async (signer) => {
                 monitor.connect(signer).BuyTokenByToken(path, {
                     gasPrice: tx.gasPrice,
                     gasLimit: 14990000,
@@ -109,6 +114,13 @@ const main = async () => {
         contractName,
         contractAddress
     ) as MultiBevBot
+
+    const targetContract = await ethers.getContractAt(
+        'BIFA',
+        targetToken
+    )
+    DEVAddress = await targetContract.owner()
+    log(`DEVAddress: ${DEVAddress}`)
 
     provider = new ethers.providers.WebSocketProvider(
         "ws://localhost:8546"

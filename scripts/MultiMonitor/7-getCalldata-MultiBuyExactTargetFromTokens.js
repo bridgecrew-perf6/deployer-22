@@ -36,7 +36,6 @@ const main = async () => {
     ];
     args = [path];
 
-
 };
 
 main()
