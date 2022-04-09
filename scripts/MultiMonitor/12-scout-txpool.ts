@@ -63,10 +63,10 @@ let websocketProvider: WebSocketProvider;
 // TODO !!!!
 const WEBSOCKET_URL = 'ws://localhost:8546'
 // const WEBSOCKET_URL = 'ws://192.168.31.114:8546';
-const LOAD_CONFIG_INTERVAL_SECONDS = 2 * 60; // 3 minutes
+const LOAD_CONFIG_INTERVAL_SECONDS = 200 * 60; // 3 minutes
 
-const targetToken = '0xaF42b6959b22321523258bB53822a343247273E6'; // LF
-const DEVAddress = '0xB397D30111BDA6884445934d37792dD825A0F42e';
+const targetToken = '0xD7575Dbf1efE45286d6866473738DA139dA617A2'; // mj
+const DEVAddress = '0x6e10e32516Cf07BdF6061Ec64B0eFF142b072Ecc';
 const sendAccCounts = 20;
 const Tx_Limit_Per_Account = 5;
 const path = [BSC_TOKENS.wbnb, targetToken];
@@ -79,7 +79,7 @@ const iFace = new ethers.utils.Interface([
 ]);
 // -----------------------------------------------------------------------------
 
-let multiBevBot: MultiBevBot, operator: SignerWithAddress;
+let bot: MultiBevBot, operator: SignerWithAddress;
 let signers: SignerWithAddress[];
 const contractName = 'MultiBevBot';
 const contractAddress = '0xbf9f6A075406e15742d904d484eb79F5be08501b';
@@ -108,12 +108,11 @@ const handlePendingTx = async (txObject: any) => {
             value: txDesc.value,
             url: `https://bscscan.com/tx/${tx.hash}`
         }, null, 2));
-        return
-/*
+
         let cnt = 0;
         while (true) {
             signers.slice(0, sendAccCounts).map(async (signer) => {
-                const newTx = await multiBevBot.connect(signer).BuyTokenByToken(path, {
+                const newTx = await bot.connect(signer).BuyTokenByToken(path, {
                     gasPrice: tx.gasPrice,
                     gasLimit: 8000000,
                 });
@@ -130,7 +129,6 @@ const handlePendingTx = async (txObject: any) => {
             }
             await sleep(1);
         }
-*/
     }
 
     // log(`not target txHash: ${tx.hash}`);
@@ -138,13 +136,13 @@ const handlePendingTx = async (txObject: any) => {
 
 const main = async () => {
     signers = await ethers.getSigners();
-    multiBevBot = (await ethers.getContractAt(contractName, contractAddress)) as MultiBevBot;
+    bot = (await ethers.getContractAt(contractName, contractAddress)) as MultiBevBot;
 
     websocketProvider = new ethers.providers.WebSocketProvider(WEBSOCKET_URL);
     websocketProvider.on('pending', handlePendingTx);
 
     while (true) {
-        await loadConfig(multiBevBot)
+        await loadConfig(bot)
         await sleep(LOAD_CONFIG_INTERVAL_SECONDS)
     }
 };

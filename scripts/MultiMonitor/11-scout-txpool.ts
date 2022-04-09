@@ -1,4 +1,4 @@
-import {KOBE, Monitor, MultiBevBot, UniswapV2Router02} from '../../typechain-types';
+import {KOBE, MultiBevBot, UniswapV2Router02} from '../../typechain-types';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { formatEther } from 'ethers/lib/utils';
 import {BigNumber, BigNumberish, ContractReceipt, ContractTransaction} from 'ethers';
@@ -42,21 +42,22 @@ let provider: any
 
 // -----------------------------------------------------------------------------
 // TODO !!!!
-const targetToken = '0xaF42b6959b22321523258bB53822a343247273E6'  // LF
-const DEVAddress = '0xB397D30111BDA6884445934d37792dD825A0F42e'
-const sendAccCounts = 20
-const Tx_Limit_Per_Account = 5
+const targetToken = '0x0AFa3b6a59d2bc04a4572a3Fe411bc036961e875'  // Orange
+const DEVAddress = '0x78c6ce87acd18330a4584c4bbf148caaae576bee' //
+
+// TODO
+const sendAccCounts = 2
+const Tx_Limit_Per_Account = 1
 const path = [
     BSC_TOKENS.wbnb,
     targetToken,
 ]
 // -----------------------------------------------------------------------------
 
-
 let monitor: MultiBevBot, operator: SignerWithAddress;
 let signers: SignerWithAddress[];
 const contractName = 'MultiBevBot'
-const contractAddress = '0xbf9f6A075406e15742d904d484eb79F5be08501b'
+const contractAddress = '0x761814DA0A97ED25Eb7F762E76Ef74bE501AC040'
 
 const handlePendingTx = async (txParam: any ) => {
     let tx: any
@@ -66,12 +67,7 @@ const handlePendingTx = async (txParam: any ) => {
         tx = await provider.getTransaction(txParam)
     }
 
-    if (tx.from === DEVAddress && tx.to === targetToken) {
-        if (tx.data.startsWith('0xa9059cbb')) {
-            log(`${tx.hash} is a transfer from DEV address!!!!!`)
-            return
-        }
-
+    if (tx.from === DEVAddress && tx.to === targetToken && tx.data.startsWith('0x7de84e10')) {
         log(`---------------------------dev address !!!!!!!`);
         log(`---------------------------dev address !!!!!!!`);
         log(`https://bscscan.com/tx/${tx.hash}`);
@@ -81,14 +77,15 @@ const handlePendingTx = async (txParam: any ) => {
         let cnt = 0
         while (true) {
             signers.slice(0, sendAccCounts).map(async (signer) => {
-                const newTx = await monitor.connect(signer).BuyTokenByToken(path, {
+                monitor.connect(signer).BuyTokenByToken(path, {
                     gasPrice: tx.gasPrice,
-                    gasLimit: 8000000,
+                    gasLimit: 14990000,
+                }).then(async (newTx) => {
+                    const receipt = await newTx.wait()
+                    log(`-------------------------------sent!!!!------------------------------`)
+                    log(receipt.transactionHash)
+                    log(`-------------------------------sent!!!!------------------------------`)
                 })
-                const receipt = await newTx.wait()
-                log(`-------------------------------sent!!!!------------------------------`)
-                log(receipt.transactionHash)
-                log(`-------------------------------sent!!!!------------------------------`)
             })
 
             log(`send ${sendAccCounts} tx!!!!!!!!!!!!!!!!!!`)
@@ -111,17 +108,9 @@ const main = async () => {
         contractAddress
     ) as MultiBevBot
 
-/*
-
-    const newTx = await monitor.BuyTokenByToken(path, {})
-    log(newTx.data)
-    log(newTx.to)
-    return
-
-*/
-
     provider = new ethers.providers.WebSocketProvider(
         "ws://localhost:8546"
+        // "ws://192.168.31.114:8546"
     );
     provider.on('pending', handlePendingTx);
     await sleep(10000);

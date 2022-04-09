@@ -26,6 +26,7 @@ const main = async () => {
 
     // 1. get instance
     const contract = (await ethers.getContractAt(contractName, contractAddress)).connect(operator);
+    const targetAddress = await contract.targetToken();
 
     // 2. change start time
     const path = [
@@ -35,8 +36,7 @@ const main = async () => {
     ];
     args = [path];
 
-    tx = await contract.populateTransaction[operation]();
-    log(tx)
+
 };
 
 main()

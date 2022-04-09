@@ -47,7 +47,7 @@ let targetConfig: TargetConfig;
 
 // FOR BABYCAKE DEV
 const iFace = new ethers.utils.Interface([
-    'function setFees(uint256 _liquidityFee, uint256 _marketingFee, uint256 _rewardFee, uint256 _buyBackFee) external',
+    'function updateTrading(bool _tradingEnabled) external',
 ]);
 // -----------------------------------------------------------------------------
 
