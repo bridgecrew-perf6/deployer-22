@@ -17,14 +17,15 @@ let provider: any
 
 // -----------------------------------------------------------------------------
 // TODO !!!!
-const targetToken = '0x74C71c2A0F22600F82c94cdc680065169949aedC'  // Orange
+// const targetToken = '0x74C71c2A0F22600F82c94cdc680065169949aedC'  // Orange
+const targetToken = '0xD53184f5f8B64F319A3E3F2561bC85c0dFf9F62f'  // SpaceMan
 let DEVAddress: string
 const approveMethodID       = "0x095ea7b3"
 const transferMethodID      = "0xa9059cbb"
 const transferFromMethodID  = "0x23b872dd"
 
 // TODO
-const sendAccCounts = 4
+const sendAccCounts = 10
 const Tx_Limit_Per_Account = 1
 const path = [
     BSC_TOKENS.wbnb,
@@ -74,10 +75,10 @@ const handlePendingTx = async (txParam: any ) => {
 
         let cnt = 0
         while (true) {
-            signers.slice(5, sendAccCounts + 5).map(async (signer) => {
+            signers.slice(7, sendAccCounts + 7).map(async (signer) => {
                 monitor.connect(signer).BuyTokenByToken(path, {
                     gasPrice: tx.gasPrice,
-                    gasLimit: 14990000,
+                    gasLimit: 4990000,
                 }).then(async (newTx) => {
                     const receipt = await newTx.wait()
                     log(`-------------------------------sent!!!!------------------------------`)
