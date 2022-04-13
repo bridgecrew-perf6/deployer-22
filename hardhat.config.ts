@@ -114,6 +114,12 @@ module.exports = {
                 mnemonic: process.env.TEST_TRIGGER_MN || "",
                 count: 100,
             }
+        },
+        's-eth': {
+            url: 'https://mainnet.infura.io/v3/3f88c25731cc4a7daecb3f5f757ac383',
+            accounts: [
+                process.env.S_ETH,
+            ]
         }
     },
     watcher: {

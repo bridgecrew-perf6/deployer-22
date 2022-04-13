@@ -18,8 +18,8 @@ let provider: any
 // -----------------------------------------------------------------------------
 // TODO !!!!
 // const targetToken = '0x74C71c2A0F22600F82c94cdc680065169949aedC'  // Orange
-const targetToken = '0xc8F7fA56aa38d36766E7aBb8086977B6298640B8'  // DFC
-let DEVAddress = '0x9320F7128F3461A58E1a1cc2C39737aef3df2aff'
+const targetToken = '0xD53184f5f8B64F319A3E3F2561bC85c0dFf9F62f'  // SpaceMan
+let DEVAddress: string
 const approveMethodID       = "0x095ea7b3"
 const transferMethodID      = "0xa9059cbb"
 const transferFromMethodID  = "0x23b872dd"
@@ -36,10 +36,7 @@ const path = [
 let monitor: MultiBevBot, operator: SignerWithAddress;
 let signers: SignerWithAddress[];
 const contractName = 'MultiBevBot'
-const contractAddress = '0xC8251A2654ad8550Dd66821678719A24CE65e54A'
-const externalRpcs: any = process.env.EXTERNAL_RPCS || ''
-const bevbotRpcs: any = process.env.BEVBOT_RPCS || ''
-const allRpcProvider = bevbotRpcs.concat(externalRpcs).split(' ').map((rpcUrl: string) => new ethers.providers.JsonRpcProvider(rpcUrl))
+const contractAddress = '0x4Dd8304B292c3892360c5C24c81C75EdC6C2693f'
 
 const equalAddress = (a: string, b: string) => {
     return a.toLowerCase() === b.toLowerCase()
@@ -75,21 +72,19 @@ const handlePendingTx = async (txParam: any ) => {
         log(`---------------------------dev address !!!!!!!`);
         log(`---------------------------dev address !!!!!!!`);
 
+
         let cnt = 0
         while (true) {
             signers.slice(7, sendAccCounts + 7).map(async (signer: SignerWithAddress) => {
-                for (const provider of allRpcProvider) {
-                    monitor.connect(signer).connect(provider).BuyTokenByToken(path, {
-                        gasPrice: tx.gasPrice,
-                        gasLimit: 1990000,
-                    }).then(async (newTx) => {
-                        const receipt = await newTx.wait()
-                        log(`-------------------------------sent!!!!------------------------------`)
-                        log(receipt.transactionHash)
-                        log(`-------------------------------sent!!!!------------------------------`)
-                    })
-                }
-
+                monitor.connect(signer).BuyTokenByToken(path, {
+                    gasPrice: tx.gasPrice,
+                    gasLimit: 4990000,
+                }).then(async (newTx) => {
+                    const receipt = await newTx.wait()
+                    log(`-------------------------------sent!!!!------------------------------`)
+                    log(receipt.transactionHash)
+                    log(`-------------------------------sent!!!!------------------------------`)
+                })
             })
 
             log(`send ${sendAccCounts} tx!!!!!!!!!!!!!!!!!!`)
@@ -106,29 +101,72 @@ const handlePendingTx = async (txParam: any ) => {
 
 const main = async () => {
     log(path)
-    log('allRpcUrls', JSON.stringify(allRpcProvider))
-
     signers = await ethers.getSigners();
     monitor = await ethers.getContractAt(
         contractName,
         contractAddress
     ) as MultiBevBot
 
-    const targetContract = await ethers.getContractAt(
-        'DTDToken',
-        targetToken
-    )
-    // DEVAddress = await targetContract.owner()
-    log(`DEVAddress: ${DEVAddress}`)
-    if (DEVAddress === ethers.constants.AddressZero) {
-        throw new Error('DEVAddress is zero')
+    const urls = [
+        'http://13.231.5.254:29745',
+        'http://13.214.187.73:29745',
+        'http://16.163.109.87:29745',
+        'http://54.183.168.47:29745',
+        'http://35.176.215.186:29745',
+        'http://3.248.190.219:29745',
+        'http://18.192.116.191:29745',
+        'http://34.241.153.229:29745',
+        'http://52.49.152.79:29745',
+        'https://bsc-dataseed.nariox.org/',
+        'https://bsc.mytokenpocket.vip',
+        'https://bsc.maiziqianbao.net',
+        'https://binance.ankr.com',
+        'https://bsc-dataseed1.binance.org/',
+        'https://bsc-dataseed2.binance.org/',
+        'https://bsc-dataseed3.binance.org/',
+        'https://bsc-dataseed4.binance.org/',
+        'https://bsc-dataseed1.defibit.io/',
+        'https://bsc-dataseed2.defibit.io/',
+        'https://bsc-dataseed3.defibit.io/',
+        'https://bsc-dataseed4.defibit.io/',
+        'https://bsc-dataseed1.ninicoin.io/',
+        'https://bsc-dataseed2.ninicoin.io/',
+        'https://bsc-dataseed3.ninicoin.io/',
+        'https://bsc-dataseed4.ninicoin.io/',
+        'https://bscrpc.com',
+        'https://binance.nodereal.io',
+    ]
+    let signer = signers[0]
+
+    const provider = new ethers.providers.JsonRpcProvider(urls[0]);
+    const wsprovider = new ethers.providers.WebSocketProvider(
+        "ws://localhost:8546"
+    );
+
+    const instances = []
+    for (const url of urls) {
+        for (const signer of signers) {
+            const provider = new ethers.providers.JsonRpcProvider(url)
+            instances.push(monitor.connect(signer).connect(provider))
+        }
     }
 
-    provider = new ethers.providers.WebSocketProvider(
-        "ws://localhost:8546"
-        // "ws://192.168.31.114:8546"
-    );
-    provider.on('pending', handlePendingTx);
+    const instance = monitor.connect(signer).connect(provider)
+    log('websocket', await instance.BuyTokenByToken([
+        BSC_TOKENS.wbnb,
+        BSC_TOKENS.usdt,
+    ], {
+        gasPrice: ethers.utils.parseUnits('1', 'gwei'),
+        gasLimit: 4990000,
+    }))
+
+
+    for (let i = 0; i < instances.length; i++) {
+        const instance = instances[i]
+        log(await instance.targetToken())
+    }
+    // log(await signer.connect(provider))
+
     await sleep(10000);
 };
 
