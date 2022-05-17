@@ -13,7 +13,7 @@ const main = async () => {
     let countMap: any = {};
 
     let cnt = 0;
-    for (let i = 17880630; i <= 17880640; i++) {
+    for (let i = 17880610; i <= 17880633; i++) {
         const block = await websocketProvider.getBlock(i);
         console.log(block.number, block.hash);
         log(cnt);
