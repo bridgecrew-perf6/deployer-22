@@ -10,7 +10,7 @@ const main = async () => {
         '0xD67deE15148F8fe037402e120327b72374930152',
         '0xEa3301956cBFdABa0dE0579e1b8A530752b449b9',
     ];
-    const countMap: any = {};
+    let countMap: any = {};
 
     let cnt = 0;
     for (let i = 17880630; i <= 17880640; i++) {
@@ -25,13 +25,12 @@ const main = async () => {
             if (monitors.includes(account)) {
                 cnt++;
                 countMap[account] = countMap[account] ? countMap[account] + 1 : 1;
-                const gasPrice = tx.gasPrice ? tx.gasPrice.toNumber() : 0;
-                countMap[gasPrice] = countMap[gasPrice] ? countMap[gasPrice] + 1 : 1;
             }
         }
 
         log('blockNumber', i)
         log('countMap', JSON.stringify(countMap, null, 2))
+        countMap = {};
     }
 
     log(JSON.stringify(countMap, null, 2));
