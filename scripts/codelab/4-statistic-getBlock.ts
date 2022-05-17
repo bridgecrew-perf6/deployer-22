@@ -7,8 +7,8 @@ const main = async () => {
     websocketProvider = new ethers.providers.WebSocketProvider(WEBSOCKET_URL);
 
     const monitors = [
-        '0xd67dee15148f8fe037402e120327b72374930152',
-        '0xea3301956cbfdaba0de0579e1b8a530752b449b9',
+        '0xD67deE15148F8fe037402e120327b72374930152',
+        '0xEa3301956cBFdABa0dE0579e1b8A530752b449b9',
     ];
     const countMap: any = {};
 
